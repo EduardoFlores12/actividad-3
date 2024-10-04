@@ -1,0 +1,222 @@
+---------------------------------------------
+OSHONSOFT Z80 ASSEMBLER LISTING
+Line   Addr Opcode      Label   Instruction
+---------------------------------------------
+0001   0000                 ORG 0000h
+0002   0000 31 00 40        LD SP, 4000h
+0003   0003 CD 06 00        CALL INICIO            ; Llamada a la rutina de inicio
+0004   0006             
+0005   0006             INICIO:
+0006   0006 CD 66 01        CALL IMPRIMIR_TEXTO
+0007   0009 49 6E 69 63     DB 'Iniciando la generacion de numeros...', 0
+0007   000D 69 61 6E 64 
+0007   0011 6F 20 6C 61 
+0007   0015 20 67 65 6E 
+0007   0019 65 72 61 63 
+0007   001D 69 6F 6E 20 
+0007   0021 64 65 20 6E 
+0007   0025 75 6D 65 72 
+0007   0029 6F 73 2E 2E 
+0007   002D 2E 00       
+0008   002F             
+0009   002F                 ; Generar los 20 números pseudoaleatorios
+0010   002F CD EE 00        CALL GENERAR_NUMEROS
+0011   0032             
+0012   0032                 ; Mostrar los números generados
+0013   0032 CD 66 01        CALL IMPRIMIR_TEXTO
+0014   0035 4E 75 6D 65     DB 'Numeros generados: ', 0
+0014   0039 72 6F 73 20 
+0014   003D 67 65 6E 65 
+0014   0041 72 61 64 6F 
+0014   0045 73 3A 20 00 
+0015   0049 CD FC 00        CALL MOSTRAR_NUMEROS_GENERADOS
+0016   004C             
+0017   004C                 ; Preguntar cómo se desea ordenar
+0018   004C CD 66 01        CALL IMPRIMIR_TEXTO
+0019   004F 4F 72 64 65     DB 'Orden Ascendente (A) o Descendente (D)?', 0
+0019   0053 6E 20 41 73 
+0019   0057 63 65 6E 64 
+0019   005B 65 6E 74 65 
+0019   005F 20 28 41 29 
+0019   0063 20 6F 20 44 
+0019   0067 65 73 63 65 
+0019   006B 6E 64 65 6E 
+0019   006F 74 65 20 28 
+0019   0073 44 29 3F 00 
+0020   0077 CD 60 01        CALL OBTENER_RESPUESTA
+0021   007A             
+0022   007A                 ; Ordenar los números según la selección
+0023   007A FE 41           CP 'A'                ; Comparar si es 'A'
+0024   007C CC 1C 01        CALL Z, ORDENAR_ASC
+0025   007F FE 44           CP 'D'                ; Comparar si es 'D'
+0026   0081 CC 20 01        CALL Z, ORDENAR_DESC
+0027   0084             
+0028   0084                 ; Mostrar números ordenados
+0029   0084 CD 66 01        CALL IMPRIMIR_TEXTO
+0030   0087 4E 75 6D 65     DB 'Numeros ordenados: ', 0
+0030   008B 72 6F 73 20 
+0030   008F 6F 72 64 65 
+0030   0093 6E 61 64 6F 
+0030   0097 73 3A 20 00 
+0031   009B CD 0C 01        CALL MOSTRAR_NUMEROS_ORDENADOS
+0032   009E             
+0033   009E                 ; Preguntar si desea continuar o salir
+0034   009E CD 66 01        CALL IMPRIMIR_TEXTO
+0035   00A1 C2 BF 44 65     DB '¿Desea repetir el programa (S/N)?', 0
+0035   00A5 73 65 61 20 
+0035   00A9 72 65 70 65 
+0035   00AD 74 69 72 20 
+0035   00B1 65 6C 20 70 
+0035   00B5 72 6F 67 72 
+0035   00B9 61 6D 61 20 
+0035   00BD 28 53 2F 4E 
+0035   00C1 29 3F 00    
+0036   00C4 CD 60 01        CALL OBTENER_RESPUESTA
+0037   00C7 FE 53           CP 'S'
+0038   00C9 CA 06 00        JP Z, INICIO
+0039   00CC             
+0040   00CC CD 66 01        CALL IMPRIMIR_TEXTO
+0041   00CF 53 61 6C 69     DB 'Saliendo del programa...', 0
+0041   00D3 65 6E 64 6F 
+0041   00D7 20 64 65 6C 
+0041   00DB 20 70 72 6F 
+0041   00DF 67 72 61 6D 
+0041   00E3 61 2E 2E 2E 
+0041   00E7 00          
+0042   00E8 C3 EB 00        JP FIN
+0043   00EB             
+0044   00EB             FIN:
+0045   00EB C3 EB 00        JP FIN                ; Bucle infinito para detener el programa
+0046   00EE             
+0047   00EE             ; --- Rutina para generar los 20 números pseudoaleatorios ---
+0048   00EE             GENERAR_NUMEROS:
+0049   00EE 21 00 80        LD HL, 8000h          ; Dirección en memoria para guardar los números
+0050   00F1 06 14           LD B, 20              ; Vamos a generar 20 números
+0051   00F3             GENERAR_BUCLE:
+0052   00F3 ED 5F           LD A, R               ; Utilizar el registro R para obtener un valor aleatorio
+0053   00F5 E6 FF           AND 0FFh              ; Asegurar que el número esté en el rango de 1 byte
+0054   00F7 77              LD (HL), A            ; Guardar el número en memoria
+0055   00F8 23              INC HL                ; Siguiente posición en memoria
+0056   00F9 10 F8           DJNZ GENERAR_BUCLE    ; Repetir hasta que se generen 20 números
+0057   00FB C9              RET
+0058   00FC             
+0059   00FC             MOSTRAR_NUMEROS_GENERADOS:
+0060   00FC 21 00 80        LD HL, 8000h          ; Dirección de los números generados
+0061   00FF 06 14           LD B, 20              ; 20 números por mostrar
+0062   0101             MOSTRAR_GENERADOS_BUCLE:
+0063   0101 7E              LD A, (HL)            ; Cargar un número
+0064   0102 CD 70 01        CALL MOSTRAR_DECIMAL  ; Mostrar el número en decimal
+0065   0105 CD 76 01        CALL IMPRIMIR_ESPACIO ; Agregar un espacio
+0066   0108 23              INC HL                ; Avanzar al siguiente número
+0067   0109 10 F6           DJNZ MOSTRAR_GENERADOS_BUCLE
+0068   010B C9              RET
+0069   010C             
+0070   010C             ; --- mostrar los números ordenados ---
+0071   010C             MOSTRAR_NUMEROS_ORDENADOS:
+0072   010C 21 00 90        LD HL, 9000h          ; Dirección de los números ya ordenados
+0073   010F 06 14           LD B, 20
+0074   0111             MOSTRAR_ORDENADOS_BUCLE:
+0075   0111 7E              LD A, (HL)            ; Cargar un número
+0076   0112 CD 70 01        CALL MOSTRAR_DECIMAL
+0077   0115 CD 76 01        CALL IMPRIMIR_ESPACIO
+0078   0118 23              INC HL                ; Siguiente número
+0079   0119 10 F6           DJNZ MOSTRAR_ORDENADOS_BUCLE
+0080   011B C9              RET
+0081   011C             
+0082   011C             ORDENAR_ASC:
+0083   011C CD 24 01        CALL ORDENAR_BURBUJA_ASC
+0084   011F C9              RET
+0085   0120             
+0086   0120             ORDENAR_DESC:
+0087   0120 CD 42 01        CALL ORDENAR_BURBUJA_DESC
+0088   0123 C9              RET
+0089   0124             
+0090   0124             ORDENAR_BURBUJA_ASC:
+0091   0124                 ; Algoritmo de burbuja para ordenar de forma ascendente
+0092   0124 01 14 00        LD BC, 20             ; 20 números
+0093   0127             BURBUJA_ASC_OUTER:
+0094   0127 21 00 80        LD HL, 8000h
+0095   012A 79              LD A, C
+0096   012B 3D              DEC A
+0097   012C 4F              LD C, A
+0098   012D 28 12           JR Z, FIN_BURBUJA_ASC ; Fin del ordenamiento
+0099   012F             BURBUJA_ASC_INNER:
+0100   012F 7E              LD A, (HL)
+0101   0130 23              INC HL
+0102   0131 BE              CP (HL)
+0103   0132 30 08           JR NC, NO_SWAP_ASC    ; Si ya está en orden, no intercambiar
+0104   0134 7E              LD A, (HL)
+0105   0135 2B              DEC HL
+0106   0136 77              LD (HL), A
+0107   0137 23              INC HL
+0108   0138 2B              DEC HL
+0109   0139 7E              LD A, (HL)
+0110   013A 23              INC HL
+0111   013B 77              LD (HL), A
+0112   013C             NO_SWAP_ASC:
+0113   013C 23              INC HL
+0114   013D 10 F0           DJNZ BURBUJA_ASC_INNER
+0115   013F 18 E6           JR BURBUJA_ASC_OUTER
+0116   0141             FIN_BURBUJA_ASC:
+0117   0141 C9              RET
+0118   0142             
+0119   0142             ORDENAR_BURBUJA_DESC:
+0120   0142                 ; Algoritmo de burbuja para ordenar de forma descendente
+0121   0142 01 14 00        LD BC, 20             ; 20 números
+0122   0145             BURBUJA_DESC_OUTER:
+0123   0145 21 00 80        LD HL, 8000h
+0124   0148 79              LD A, C
+0125   0149 3D              DEC A
+0126   014A 4F              LD C, A
+0127   014B 28 12           JR Z, FIN_BURBUJA_DESC
+0128   014D             BURBUJA_DESC_INNER:
+0129   014D 7E              LD A, (HL)
+0130   014E 23              INC HL
+0131   014F BE              CP (HL)
+0132   0150 38 08           JR C, NO_SWAP_DESC
+0133   0152 7E              LD A, (HL)
+0134   0153 2B              DEC HL
+0135   0154 77              LD (HL), A
+0136   0155 23              INC HL
+0137   0156 2B              DEC HL
+0138   0157 7E              LD A, (HL)
+0139   0158 23              INC HL
+0140   0159 77              LD (HL), A
+0141   015A             NO_SWAP_DESC:
+0142   015A 23              INC HL
+0143   015B 10 F0           DJNZ BURBUJA_DESC_INNER
+0144   015D 18 E6           JR BURBUJA_DESC_OUTER
+0145   015F             FIN_BURBUJA_DESC:
+0146   015F C9              RET
+0147   0160             
+0148   0160             OBTENER_RESPUESTA:
+0149   0160 DB 00           IN A, (0)
+0150   0162 FE 0D           CP 0DH                ; Comparar con ENTER (0x0D en ASCII)
+0151   0164 C8              RET Z                 ; Si es ENTER, retornar
+0152   0165 C9              RET
+0153   0166             
+0154   0166             IMPRIMIR_TEXTO:
+0155   0166 7E              LD A, (HL)            ; Cargar el siguiente carácter
+0156   0167 FE 00           CP 0
+0157   0169 C8              RET Z                 ; Si es 0, retornar
+0158   016A D3 01           OUT (1), A
+0159   016C 23              INC HL                ; Siguiente carácter
+0160   016D 18 F7           JR IMPRIMIR_TEXTO     ; Repetir
+0161   016F C9              RET
+0162   0170             
+0163   0170             MOSTRAR_DECIMAL:
+0164   0170 F5              PUSH AF               ; Guardar el registro A
+0165   0171 CD 7B 01        CALL DIVIDE_BY_TEN     ; Convertir a decimal
+0166   0174 F1              POP AF                ; Restaurar el registro A
+0167   0175 C9              RET
+0168   0176             
+0169   0176             
+0170   0176             IMPRIMIR_ESPACIO:
+0171   0176 3E 20           LD A, ' '             ; Cargar el carácter de espacio
+0172   0178 D3 01           OUT (1), A            ; Enviar a la pantalla
+0173   017A C9              RET
+0174   017B             
+0175   017B             DIVIDE_BY_TEN:
+0176   017B             
+0177   017B C9              RET
+Number of errors = 0
